@@ -16,5 +16,10 @@ To use these templates launch a cluster template for the EC2Launch type and netw
    - 1 ECS Cluster with Autoscaling Group and Security Groups
    - 1 ECS role for EC2 Instances
    - One ALB with the required Security Groups and Target Groups
-   
+ 5. Browse to the EC2LaunchType/services directory for deploying the ECS services and Task Definitions
+ 6. Create the Services with values as per your liking. The following resources would be created in this step:
+   - 2 ECS services
+   - 2 Task Definitions
+   - The second Service Target Group
+   - ALB rules for directing traffic to appropriate services
   
