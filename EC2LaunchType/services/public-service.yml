@@ -7,170 +7,115 @@ Parameters:
     Description: The name of the parent cluster stack that you created. Necessary
                  to locate and reference resources created by that stack.
 
-#Details for first service
+#Details for service
 
-  ServiceNameFirst:
+  ServiceName:
     Type: String
     Default: nginx
     Description: A name for the service
-  ImageUrlFirst:
+  ImageUrl:
     Type: String
     Default: nginx
     Description: The url of a docker image that contains the application process that
                  will handle the traffic for this service
-  HostPortFirst:
+  HostPort:
     Type: Number
     Default: 0
     Description: What port the ECS instance would listen to for the container mapping               
-  ContainerPortFirst:
+  ContainerPort:
     Type: Number
     Default: 80
     Description: What port number the application inside the docker container is binding to
-  ContainerCpuFirst:
+  ContainerCpu:
     Type: Number
     Default: 256
     Description: How much CPU to give the container. 1024 is 1 CPU
-  ContainerMemoryFirst:
+  ContainerMemory:
     Type: Number
     Default: 512
     Description: How much memory in megabytes to give the container
-  MemorySoftLimitFirst:
+  MemorySoftLimit:
     Type: Number
     Default: 128
     Description: Soft Memory Limit on the Container
-  PathFirst:
+  Path:
     Type: String
     Default: "*"
     Description: A path on the public load balancer that this service
                  should be connected to. Use * to send all load balancer
                  traffic to this service.
-  PriorityFirst:
+  Priority:
     Type: Number
     Default: 1
     Description: The priority for the routing rule added to the load balancer.
                  This only applies if your have multiple services which have been
                  assigned to different paths on the load balancer.
-  DesiredCountFirst:
+  DesiredCount:
     Type: Number
     Default: 2
     Description: How many copies of the service task to run
-  RoleFirst:
+  Role:
     Type: String
     Default: ""
     Description: (Optional) An IAM role to give the service's containers if the code within needs to
                  access other AWS resources like S3 buckets, DynamoDB tables, etc
 
-
-#Details for second service
-
-  ServiceNameSecond:
-    Type: String
-    Default: nginx
-    Description: A name for the service
-  ImageUrlSecond:
-    Type: String
-    Default: nginx
-    Description: The url of a docker image that contains the application process that
-                 will handle the traffic for this service
-  HostPortSecond:
-    Type: Number
-    Default: 0
-    Description: What port the ECS instance would listen to for the container mapping
-  ContainerPortSecond:
-    Type: Number
-    Default: 80
-    Description: What port number the application inside the docker container is binding to
-  ContainerCpuSecond:
-    Type: Number
-    Default: 256
-    Description: How much CPU to give the container. 1024 is 1 CPU
-  ContainerMemorySecond:
-    Type: Number
-    Default: 512
-    Description: How much memory in megabytes to give the container
-  MemorySoftLimitSecond:
-    Type: Number
-    Default: 128
-    Description: Soft Memory Limit on the Container
-  PathSecond:
-    Type: String
-    Default: "*"
-    Description: A path on the public load balancer that this service
-                 should be connected to. Use * to send all load balancer
-                 traffic to this service.
-  PrioritySecond:
-    Type: Number
-    Default: 1
-    Description: The priority for the routing rule added to the load balancer.
-                 This only applies if your have multiple services which have been
-                 assigned to different paths on the load balancer.
-  DesiredCountSecond:
-    Type: Number
-    Default: 2
-    Description: How many copies of the service task to run
-  RoleSecond:
-    Type: String
-    Default: ""
-    Description: (Optional) An IAM role to give the service's containers if the code within needs to
-                 access other AWS resources like S3 buckets, DynamoDB tables, etc
 
 
 Conditions:
-  HasCustomRole1: !Not [ !Equals [!Ref 'RoleFirst', ''] ]
-  HasCustomRole2: !Not [ !Equals [!Ref 'RoleSecond', ''] ]
-
+  HasCustomRole: !Not [ !Equals [!Ref 'Role', ''] ]
 
 Resources:
 
   # The task definition. This is a simple metadata description of what
   # container to run, and what resource requirements it has.
-  TaskDefinitionFirst:
+  TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: !Ref 'ServiceNameFirst'
-      Cpu: !Ref 'ContainerCpuFirst'
-      Memory: !Ref 'ContainerMemoryFirst'
+      Family: !Ref 'ServiceName'
+      Cpu: !Ref 'ContainerCpu'
+      Memory: !Ref 'ContainerMemory'
       TaskRoleArn:
         Fn::If:
-          - 'HasCustomRole1'
-          - !Ref 'RoleFirst'
+          - 'HasCustomRole'
+          - !Ref 'Role'
           - !Ref "AWS::NoValue"
       ContainerDefinitions:
-        - Name: !Ref 'ServiceNameFirst'
-          Cpu: !Ref 'ContainerCpuFirst'
-          MemoryReservation: !Ref 'MemorySoftLimitFirst'
-          Image: !Ref 'ImageUrlFirst'
+        - Name: !Ref 'ServiceName'
+          Cpu: !Ref 'ContainerCpu'
+          MemoryReservation: !Ref 'MemorySoftLimit'
+          Image: !Ref 'ImageUrl'
           PortMappings:
- #           - HostPort: !Ref 'HostPortFirst'
-            - ContainerPort: !Ref 'ContainerPortFirst'
+ #           - HostPort: !Ref 'HostPort'
+            - ContainerPort: !Ref 'ContainerPort'
 
   # The service. The service is a resource which allows you to run multiple
   # copies of a type of task, and gather up their logs and metrics, as well
   # as monitor the number of running tasks and replace any that have crashed
-  ServiceFirst:
+  Service:
     Type: AWS::ECS::Service
-    DependsOn: LoadBalancerRuleFirst
+    DependsOn: LoadBalancerRule
     Properties:
-      ServiceName: !Ref 'ServiceNameFirst'
+      ServiceName: !Ref 'ServiceName'
       Cluster:
         Fn::ImportValue:
           !Join [':', [!Ref 'StackName', 'ClusterName']]
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 75
-      DesiredCount: !Ref 'DesiredCountFirst'
-      TaskDefinition: !Ref 'TaskDefinitionFirst'
+      DesiredCount: !Ref 'DesiredCount'
+      TaskDefinition: !Ref 'TaskDefinition'
       LoadBalancers:
-        - ContainerName: !Ref 'ServiceNameFirst'
-          ContainerPort: !Ref 'ContainerPortFirst'
-          TargetGroupArn: !Ref 'TargetGroupFirst'
+        - ContainerName: !Ref 'ServiceName'
+          ContainerPort: !Ref 'ContainerPort'
+          TargetGroupArn: !Ref 'TargetGroup'
 
   # A target group. This is used for keeping track of all the tasks, and
   # what IP addresses / port numbers they have. You can query it yourself,
   # to use the addresses yourself, but most often this target group is just
   # connected to an application load balancer, or network load balancer, so
   # it can automatically distribute traffic across all the targets.
-  TargetGroupFirst:
+  TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       HealthCheckIntervalSeconds: 6
@@ -178,7 +123,7 @@ Resources:
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
-      Name: !Ref 'ServiceNameFirst'
+      Name: !Ref 'ServiceName'
       Port: 80
       Protocol: HTTP
       UnhealthyThresholdCount: 2
@@ -187,95 +132,17 @@ Resources:
           !Join [':', [!Ref 'StackName', 'VPCId']]
 
   # Create a rule on the load balancer for routing traffic to the target group
-  LoadBalancerRuleFirst:
+  LoadBalancerRule:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
     Properties:
       Actions:
-        - TargetGroupArn: !Ref 'TargetGroupFirst'
+        - TargetGroupArn: !Ref 'TargetGroup'
           Type: 'forward'
       Conditions:
         - Field: path-pattern
-          Values: [!Ref 'PathFirst']
+          Values: [!Ref 'Path']
       ListenerArn:
         Fn::ImportValue:
           !Join [':', [!Ref 'StackName', 'PublicListener']]
-      Priority: !Ref 'PriorityFirst'
+      Priority: !Ref 'Priority'
 
-
-  TaskDefinitionSecond:
-    Type: AWS::ECS::TaskDefinition
-    Properties:
-      Family: !Ref 'ServiceNameSecond'
-      Cpu: !Ref 'ContainerCpuSecond'
-      Memory: !Ref 'ContainerMemorySecond'
-      TaskRoleArn:
-        Fn::If:
-          - 'HasCustomRole2'
-          - !Ref 'RoleSecond'
-          - !Ref "AWS::NoValue"
-      ContainerDefinitions:
-        - Name: !Ref 'ServiceNameSecond'
-          Cpu: !Ref 'ContainerCpuSecond'
-          Memory: !Ref 'ContainerMemorySecond'
-          MemoryReservation: !Ref 'MemorySoftLimitSecond'          
-          Image: !Ref 'ImageUrlSecond'
-          PortMappings:
-  #          - HostPort: !Ref 'HostPortSecond'
-            - ContainerPort: !Ref 'ContainerPortSecond'
-
-  # The service. The service is a resource which allows you to run multiple
-  # copies of a type of task, and gather up their logs and metrics, as well
-  # as monitor the number of running tasks and replace any that have crashed
-  ServiceSecond:
-    Type: AWS::ECS::Service
-    DependsOn: LoadBalancerRuleSecond
-    Properties:
-      ServiceName: !Ref 'ServiceNameSecond'
-      Cluster:
-        Fn::ImportValue:
-          !Join [':', [!Ref 'StackName', 'ClusterName']]
-      DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 75
-      DesiredCount: !Ref 'DesiredCountSecond'
-      TaskDefinition: !Ref 'TaskDefinitionSecond'
-      LoadBalancers:
-        - ContainerName: !Ref 'ServiceNameSecond'
-          ContainerPort: !Ref 'ContainerPortSecond'
-          TargetGroupArn: !Ref 'TargetGroupSecond'
-
-  # A target group. This is used for keeping track of all the tasks, and
-  # what IP addresses / port numbers they have. You can query it yourself,
-  # to use the addresses yourself, but most often this target group is just
-  # connected to an application load balancer, or network load balancer, so
-  # it can automatically distribute traffic across all the targets.
-  TargetGroupSecond:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      HealthCheckIntervalSeconds: 6
-      HealthCheckPath: /
-      HealthCheckProtocol: HTTP
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 2
-      Name: !Ref 'ServiceNameSecond'
-      Port: 80
-      Protocol: HTTP
-      UnhealthyThresholdCount: 2
-      VpcId:
-        Fn::ImportValue:
-          !Join [':', [!Ref 'StackName', 'VPCId']]
-
-  # Create a rule on the load balancer for routing traffic to the target group
-  LoadBalancerRuleSecond:
-    Type: AWS::ElasticLoadBalancingV2::ListenerRule
-    Properties:
-      Actions:
-        - TargetGroupArn: !Ref 'TargetGroupSecond'
-          Type: 'forward'
-      Conditions:
-        - Field: path-pattern
-          Values: [!Ref 'PathSecond']
-      ListenerArn:
-        Fn::ImportValue:
-          !Join [':', [!Ref 'StackName', 'PublicListener']]
-      Priority: !Ref 'PrioritySecond'
