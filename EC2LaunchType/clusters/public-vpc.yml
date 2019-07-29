@@ -54,7 +54,7 @@ Parameters:
   DesiredCapacity:
     Description: Number of EC2 instances to launch in your ECS cluster.
     Type: Number
-    Default: '2'
+    Default: '1'
     
   MaxSize:
     Description: Maximum number of EC2 instances that can be launched in your ECS cluster.
@@ -74,14 +74,14 @@ Parameters:
     Description: EC2 instance type
     Type: String
     Default: t3.micro
-    AllowedValues: [t2.micro, t2.small, t2.medium, t2.large, t3.micro, t3.small, t3.large, t2.medium,
-      m3.medium, m3.large, m3.xlarge, m3.2xlarge, m4.large, m4.xlarge, m4.2xlarge, m4.4xlarge,
+    AllowedValues: [t2.micro, t2.small, t2.medium, t2.large, t3.micro, t3.small, t3.medium, t3.large, 
+      t2.medium,  m3.medium, m3.large, m3.xlarge, m3.2xlarge, m4.large, m4.xlarge, m4.2xlarge, m4.4xlarge,
       m4.10xlarge, c4.large, c4.xlarge, c4.2xlarge, c4.4xlarge, c4.8xlarge, c3.large, c3.xlarge,
       c3.2xlarge, c3.4xlarge, c3.8xlarge, r3.large, r3.xlarge, r3.2xlarge, r3.4xlarge,
       r3.8xlarge, i2.xlarge, i2.2xlarge, i2.4xlarge, i2.8xlarge]
     ConstraintDescription: Please choose a valid instance type.
 
-Mappings:
+#Mappings:
   # Hard values for the subnet masks. These masks define
   # the range of internal IP addresses that can be assigned.
   # The VPC can have all IP's from 10.0.0.0 to 10.0.255.255
@@ -93,13 +93,13 @@ Mappings:
   # If you need more IP addresses (perhaps you have so many
   # instances that you run out) then you can customize these
   # ranges to add more
-  SubnetConfig:
-    VPC:
-      CIDR: '10.0.0.0/16'
-    PublicOne:
-      CIDR: '10.0.0.0/24'
-    PublicTwo:
-      CIDR: '10.0.1.0/24'
+#  SubnetConfig:
+#    VPC:
+#      CIDR: '10.0.0.0/16'
+#    PublicOne:
+#      CIDR: '10.0.0.0/24'
+#    PublicTwo:
+#      CIDR: '10.0.1.0/24'
 
 Resources:
   # VPC in which containers will be networked.

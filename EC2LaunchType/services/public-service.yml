@@ -54,6 +54,13 @@ Parameters:
     Type: Number
     Default: 2
     Description: How many copies of the service task to run
+  
+  HealthCheckPath:
+    Type: String
+    Default: "/"
+    Description: The Health Check path of the target group which is used to Check
+                 the health state of the services
+  
   Role:
     Type: String
     Default: ""
@@ -119,7 +126,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       HealthCheckIntervalSeconds: 6
-      HealthCheckPath: /
+      HealthCheckPath: !Ref 'HealthCheckPath'
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
