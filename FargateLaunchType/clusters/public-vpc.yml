@@ -59,7 +59,7 @@ Resources:
     Properties:
       EnableDnsSupport: true
       EnableDnsHostnames: true
-      CidrBlock: !FindInMap ['SubnetConfig', 'VPC', 'CIDR']
+      CidrBlock: !Ref VPC
 
   # Three public subnets, where containers can have public IP addresses
   PublicSubnetOne:
