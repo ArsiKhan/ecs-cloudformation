@@ -34,21 +34,6 @@ Parameters:
     Type: String
     Default: 10.192.12.0/24
 
-  PrivateSubnet1CIDR:
-    Description: Please enter the IP range (CIDR notation) for the private subnet in the Second Availability Zone
-    Type: String
-    Default: 10.192.20.0/24
-
-  PrivateSubnet2CIDR:
-    Description: Please enter the IP range (CIDR notation) for the private subnet in the second Availability Zone
-    Type: String
-    Default: 10.192.21.0/24
-
-  PrivateSubnet3CIDR:
-    Description: Please enter the IP range (CIDR notation) for the private subnet in the second Availability Zone
-    Type: String
-    Default: 10.192.22.0/24
-
 # Parameters for ECS Cluster Resources
 
   DesiredCapacity:
