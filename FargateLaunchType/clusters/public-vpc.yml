@@ -77,7 +77,7 @@ Resources:
     Properties:
       AvailabilityZone:
          Fn::Select:
-         - 1
+         - 2
          - Fn::GetAZs: {Ref: 'AWS::Region'}
       VpcId: !Ref 'VPC'
       CidrBlock: !Ref PublicSubnet3CIDR
