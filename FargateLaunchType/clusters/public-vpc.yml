@@ -16,11 +16,7 @@ Mappings:
   # ranges to add more
   SubnetConfig:
     VPC:
-      CIDR: '10.0.0.0/16'
-    PublicOne:
-      CIDR: '10.0.0.0/24'
-    PublicTwo:
-      CIDR: '10.0.1.0/24'
+      CIDR: '10.192.0.0/16'
 
 Parameters:
 
